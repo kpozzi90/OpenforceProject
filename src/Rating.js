@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import './Rating.css';
 import axios from 'axios';
+import Cookies from 'universal-cookie';
+ 
+const cookies = new Cookies();
 
 class Rating extends Component {
   constructor(props) {
@@ -19,21 +22,27 @@ class Rating extends Component {
   }
 
   submitRating() {
-    axios.put('/openforce/rating', { 
-      score: this.state.newRating,
-      quote: this.props.quote
-     })
-      .then( (res) => {
-        this.props.refreshRating()
-      })
-      .catch(err => console.log(err));
+    let cookieString = this.props.quote.split('…').join(' ');
+    if (!cookies.get(cookieString)) {
+      axios.put('/openforce/rating', { 
+        score: this.state.newRating,
+        quote: this.props.quote
+       })
+        .then( (res) => {
+          this.props.refreshRating()
+        })
+        .catch(err => console.log(err));
+        cookies.set(cookieString, '1')
+    } else {
+      alert('Only one vote per quote is allowed.');
+    }
   }
 
   render() {
     return (
       <div>
         <p>{this.props.quote === '' ? '' : this.props.rating === 0 ? 'This quote has no ratings yet' :
-         this.props.rating.toString() + ' / 5'}</p>
+         'Quote Rating: ' + this.props.rating.toString() + ' / 5'}</p>
           <label>
             Rate this quote:
             <select onChange = {this.rateQuote}>
