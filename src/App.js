@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
+import Rating from './Rating.js';
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
       quote: '',
-      rating: '',
+      rating: 0,
     }
     this.getShortQuote = this.getShortQuote.bind(this);
     this.getMediumQuote = this.getMediumQuote.bind(this);
     this.getLongQuote = this.getLongQuote.bind(this);
+    this.refreshRating = this.refreshRating.bind(this);
   }
 
   getShortQuote() {
@@ -19,7 +21,7 @@ class App extends Component {
       .then((res) => {
         this.setState({
           quote: res.data.rows[0].quote,
-          rating: res.data.rows[0].rating
+          rating: Math.round(res.data.rows[0].rating * 100) / 100,
         })
       })
   }
@@ -29,7 +31,7 @@ class App extends Component {
       .then((res) => {
         this.setState({
           quote: res.data.rows[0].quote,
-          rating: res.data.rows[0].rating
+          rating: Math.round(res.data.rows[0].rating * 100) / 100,
         })
       })
   }
@@ -39,9 +41,19 @@ class App extends Component {
       .then((res) => {
         this.setState({
           quote: res.data.rows[0].quote,
-          rating: res.data.rows[0].rating
+          rating: Math.round(res.data.rows[0].rating * 100) / 100,
         })
       })
+  }
+
+  refreshRating() {
+    axios.get('openforce/rating', {params: this.state.quote})
+      .then((res) => {
+        this.setState({
+          rating: Math.round(res.data.rows[0].rating * 100) / 100
+        })
+      })
+      .catch(err => console.log(err));
   }
 
   render() {
@@ -51,7 +63,7 @@ class App extends Component {
         <button onClick = {this.getMediumQuote}>get a medium quote</button>
         <button onClick = {this.getLongQuote}>get a long quote</button>
         <p>{this.state.quote}</p>
-        <p>{this.state.quote === '' ? '' : this.state.rating === '0' ? 'This quote has no ratings yet' : this.state.rating.toString() + ' / 5'}</p>
+        <Rating quote = {this.state.quote} rating = {this.state.rating} refreshRating = {this.refreshRating}/>
       </div>
     );
   }

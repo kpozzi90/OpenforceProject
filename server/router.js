@@ -11,5 +11,9 @@ router
 router
   .route('/getLongQuote')
   .get(controller.getLongQuote)
+router
+  .route('/rating')
+  .get(controller.refreshRating)
+  .put(controller.submitRating)
 
 module.exports = router;
