@@ -21,6 +21,7 @@ class App extends Component {
       .then((res) => {
         this.setState({
           quote: res.data.rows[0].quote,
+          // set rating rounded to two decimal places
           rating: Math.round(res.data.rows[0].rating * 100) / 100,
         })
       })

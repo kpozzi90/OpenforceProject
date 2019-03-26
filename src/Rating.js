@@ -23,6 +23,7 @@ class Rating extends Component {
 
   submitRating() {
     let cookieString = this.props.quote.split('…').join(' ');
+    //search for cookie that matches quote being rated
     if (!cookies.get(cookieString)) {
       axios.put('/openforce/rating', { 
         score: this.state.newRating,
@@ -32,8 +33,10 @@ class Rating extends Component {
           this.props.refreshRating()
         })
         .catch(err => console.log(err));
+        //create cookie after rating has been set
         cookies.set(cookieString, '1')
     } else {
+      //if cookie was found and quote has already been voted on, alert client
       alert('Only one vote per quote is allowed.');
     }
   }

@@ -37,6 +37,7 @@ const controller = {
 
   refreshRating: (req, res) => {
     let quote = req.query['0'];
+    //switch apostrophes to double apostrophes for postgresql syntax
     for (let i = 0; i < quote.length; i++) {
       if(quote[i] ===`'`) {
         let newQuote = quote.slice(0,i) + `'` + quote.slice(i)
@@ -56,6 +57,7 @@ const controller = {
 
   submitRating: (req, res) => {
     let quote = req.body.quote;
+    //switch apostrophes to double apostrophes for postgresql syntax
     for (let i = 0; i < quote.length; i++) {
       if(quote[i] ===`'`) {
         let newQuote = quote.slice(0,i) + `'` + quote.slice(i)
@@ -66,6 +68,7 @@ const controller = {
     db.query(`SELECT * FROM quotes WHERE quote = '${quote}'`)
       .then((data) => {
         let info = data.rows[0]
+        //create new rating by using a weighted average based on pervious rating and number of votes
         let newRating = (parseFloat(info.rating) * info.votes + parseFloat(req.body.score)) / (info.votes + 1)
         db.query(`UPDATE quotes SET rating = ${newRating}, votes = ${info.votes + 1} WHERE quote = '${quote}'`)
           .then((data)=> {
